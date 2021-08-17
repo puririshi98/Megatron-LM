@@ -17,8 +17,8 @@ from commons import set_random_seed
 from commons import IdentityLayer
 from commons import print_separator
 from commons import initialize_distributed
-from mpu.cross_entropy import vocab_parallel_cross_entropy
-import mpu
+from megatron.mpu.cross_entropy import vocab_parallel_cross_entropy
+import megatron.mpu as mpu
 import torch.nn.functional as F
 import torch
 import random
@@ -50,7 +50,7 @@ def mpu_cross_entropy(batch_size, seq_length, vocab_size,
     logits_parallel = mpu.scatter_to_tensor_model_parallel_region(logits)
     target = torch.cuda.LongTensor(
         size=(batch_size, seq_length)).random_(0, vocab_size)
-    loss = vocab_parallel_cross_entropy(logits_parallel, target).mean()
+    loss = vocab_parallel_cross_entropy(torch.clone(logits_parallel), target).mean()
     loss.backward()
     return loss, identity.weight.grad
 
@@ -89,11 +89,8 @@ def test_cross_entropy(tensor_model_parallel_size):
     assert error < 1.0e-6
 
     # Reset groups
-    mpu.destroy_tensor_model_parallel()
 
-    torch.distributed.barrier()
-    if torch.distributed.get_rank() == 0:
-        print('>> passed the test :-)')
+    print('>> passed the test :-)')
 
 
 if __name__ == '__main__':
