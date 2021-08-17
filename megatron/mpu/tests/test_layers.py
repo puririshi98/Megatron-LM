@@ -123,7 +123,7 @@ def test_initialize_affine_weight(tensor_model_parallel_size):
     # ---------------
     weight = torch.empty(output_size_coeff, input_size)
     set_random_seed(seed)
-    layers._initialize_affine_weight(weight, output_size, input_size,
+    layers._initialize_affine_weight_gpu(weight, output_size, input_size,
 
                                      output_size_coeff, 0,
                                      torch.nn.init.normal_)
@@ -147,7 +147,7 @@ def test_initialize_affine_weight(tensor_model_parallel_size):
     # ------------
     weight = torch.empty(output_size, input_size_coeff)
     set_random_seed(seed)
-    mpu.layers._initialize_affine_weight(weight, output_size, input_size,
+    mpu.layers._initialize_affine_weight_gpu(weight, output_size, input_size,
                                          input_size_coeff, 1,
                                          torch.nn.init.normal_)
     # Target.
