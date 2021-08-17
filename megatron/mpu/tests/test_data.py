@@ -15,8 +15,8 @@
 
 from commons import print_separator
 from commons import initialize_distributed
-from mpu import data as data_utils
-import mpu
+from megatron.mpu import data as data_utils
+import megatron.mpu as mpu
 import torch
 import functools
 import operator

@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from mpu import layers
+from megatron.mpu import layers
 from commons import set_random_seed
 from commons import print_separator
 from commons import initialize_distributed
-import mpu
+import megatron.mpu as mpu
 from torch.nn.parameter import Parameter
 import torch.nn.init as init
 import torch
