@@ -19,7 +19,7 @@ import random
 import numpy
 import torch
 
-import mpu
+import megatron.mpu as mpu
 
 
 class IdentityLayer(torch.nn.Module):
