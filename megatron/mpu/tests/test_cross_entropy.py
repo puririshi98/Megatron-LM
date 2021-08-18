@@ -12,7 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import sys
+sys.path.append("../..")
+sys.path.append("../../..")
 from commons import set_random_seed
 from commons import IdentityLayer
 from commons import print_separator
@@ -22,8 +24,6 @@ import megatron.mpu as mpu
 import torch.nn.functional as F
 import torch
 import random
-import sys
-sys.path.append("../..")
 
 
 def torch_cross_entropy(batch_size, seq_length, vocab_size,

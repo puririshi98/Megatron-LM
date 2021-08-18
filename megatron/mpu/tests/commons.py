@@ -20,6 +20,7 @@ import numpy
 import torch
 
 import megatron.mpu as mpu
+from megatron import global_vars
 
 
 class IdentityLayer(torch.nn.Module):
@@ -42,10 +43,11 @@ def set_random_seed(seed):
 def initialize_distributed(backend='nccl'):
     """Initialize torch.distributed."""
     # Get local rank in case it is provided.
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--local_rank', type=int, default=None,
-                        help='local rank passed from distributed launcher')
-    args = parser.parse_args()
+    #parser = argparse.ArgumentParser()
+    #parser.add_argument('--local_rank', type=int, default=None,
+    #                    help='local rank passed from distributed launcher')
+    #args = parser.parse_args()
+    args = global_vars.get_args()
     local_rank = args.local_rank
 
     # Get rank and world size.

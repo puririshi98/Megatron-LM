@@ -12,16 +12,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import sys
+sys.path.append("../..")
+sys.path.append("../../..")
 from commons import print_separator
 from commons import initialize_distributed
-from megatron.mpu import data as data_utils
-import megatron.mpu as mpu
+from mpu import data as data_utils
+import mpu
 import torch
 import functools
 import operator
-import sys
-sys.path.append("../..")
 
 
 def test_broadcast_data(tensor_model_parallel_size):

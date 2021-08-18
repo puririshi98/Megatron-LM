@@ -12,18 +12,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from megatron.mpu import layers
+import sys
+sys.path.append("../..")
+sys.path.append("../../..")
+from mpu import layers
 from commons import set_random_seed
 from commons import print_separator
 from commons import initialize_distributed
-import megatron.mpu as mpu
+import mpu
 from torch.nn.parameter import Parameter
 import torch.nn.init as init
 import torch
 import random
-import sys
-sys.path.append("../..")
+
 
 
 def test_parallel_embedding(tensor_model_parallel_size):
