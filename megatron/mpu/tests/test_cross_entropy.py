@@ -19,8 +19,8 @@ from commons import set_random_seed
 from commons import IdentityLayer
 from commons import print_separator
 from commons import initialize_distributed
-from megatron.mpu.cross_entropy import vocab_parallel_cross_entropy
-import megatron.mpu as mpu
+from mpu.cross_entropy import vocab_parallel_cross_entropy
+import mpu
 import torch.nn.functional as F
 import torch
 import random
