@@ -35,7 +35,7 @@ _GLOBAL_TIMERS = None
 
 def get_args():
     """Return arguments."""
-    _ensure_var_is_initialized(_GLOBAL_ARGS, 'args')
+    # _ensure_var_is_initialized(_GLOBAL_ARGS, 'args')
     return _GLOBAL_ARGS
 
 
