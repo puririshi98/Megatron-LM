@@ -19,7 +19,7 @@ import random
 import numpy
 import torch
 
-import megatron.mpu as mpu
+import mpu
 from megatron import global_vars
 
 

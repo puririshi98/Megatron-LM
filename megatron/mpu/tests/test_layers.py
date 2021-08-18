@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import sys
 sys.path.append("../..")
 sys.path.append("../../..")
@@ -25,7 +26,9 @@ import torch.nn.init as init
 import torch
 import random
 
+from megatron import global_vars
 
+global_vars.set_global_variables()
 
 def test_parallel_embedding(tensor_model_parallel_size):
 
@@ -105,7 +108,7 @@ def test_parallel_embedding(tensor_model_parallel_size):
         print('>> passed the test :-)')
 
 
-def test_initialize_affine_weight(tensor_model_parallel_size):
+def test_initialize_affine_weight(tensor_model_parallel_size, device):
 
     mpu.initialize_model_parallel(tensor_model_parallel_size)
     if torch.distributed.get_rank() == 0:
@@ -124,10 +127,13 @@ def test_initialize_affine_weight(tensor_model_parallel_size):
     # ---------------
     weight = torch.empty(output_size_coeff, input_size)
     set_random_seed(seed)
-    layers._initialize_affine_weight_cpu(weight, output_size, input_size,
+    if device == 'cpu':
+        layers._initialize_affine_weight_cpu(weight, output_size, input_size,
+                                             output_size_coeff, 0,
+                                             torch.nn.init.normal_)
+    else:
+        layers._initialize_affine_weight_gpu(weight, torch.nn.init.normal_, 0)
 
-                                     output_size_coeff, 0,
-                                     torch.nn.init.normal_)
     # Target.
     set_random_seed(seed)
     master_weight = torch.empty(output_size, input_size)
@@ -148,9 +154,14 @@ def test_initialize_affine_weight(tensor_model_parallel_size):
     # ------------
     weight = torch.empty(output_size, input_size_coeff)
     set_random_seed(seed)
-    mpu.layers._initialize_affine_weight_cpu(weight, output_size, input_size,
-                                         input_size_coeff, 1,
-                                         torch.nn.init.normal_)
+    if device == 'cpu':
+        mpu.layers._initialize_affine_weight_cpu(weight, output_size, input_size,
+                                                 input_size_coeff, 1,
+                                                 torch.nn.init.normal_)
+
+    else:
+        mpu.layers._initialize_affine_weight_gpu(weight, torch.nn.init.normal_, 1)
+
     # Target.
     set_random_seed(seed)
     master_weight = torch.empty(output_size, input_size)
@@ -207,7 +218,7 @@ def test_column_parallel_linear(tensor_model_parallel_size):
     loss_weight = torch.randn([batch_size, output_size]).cuda()
     # Forward
     input_ = identity_layer()
-    output = linear_layer(input_)
+    output, _ = linear_layer(input_)
     loss = torch.mul(output, loss_weight).sum()
     # Backward
     loss.backward()
@@ -274,7 +285,7 @@ def test_row_parallel_linear(tensor_model_parallel_size):
     loss_weight = torch.randn([batch_size, output_size]).cuda()
     # Forward
     input_ = identity_layer()
-    output = linear_layer(input_)
+    output, _ = linear_layer(input_)
     loss = torch.mul(output, loss_weight).sum()
     # Backward
     loss.backward()
@@ -494,17 +505,26 @@ if __name__ == '__main__':
     initialize_distributed()
     world_size = torch.distributed.get_world_size()
 
-    print_separator('test initialize affine weight')
+    print_separator('test initialize affine weight cpu')
     tensor_model_parallel_size = 1
     while tensor_model_parallel_size <= world_size:
-        test_initialize_affine_weight(tensor_model_parallel_size)
+        test_initialize_affine_weight(tensor_model_parallel_size, 'cpu')
+        tensor_model_parallel_size *= 2
+    # Reset groups
+    mpu.destroy_model_parallel()
+
+    print_separator('test initialize affine weight gpu')
+    tensor_model_parallel_size = 1
+    while tensor_model_parallel_size <= world_size:
+        test_initialize_affine_weight(tensor_model_parallel_size, 'gpu')
         tensor_model_parallel_size *= 2
 
-    tensor_model_parallel_size = 1
-    while tensor_model_parallel_size <= world_size:
-        print_separator('test parallel embedding')
-        test_parallel_embedding(tensor_model_parallel_size)
-        tensor_model_parallel_size *= 2
+    # Deleted, replaced with vocab parallel embedding?
+    #tensor_model_parallel_size = 1
+    #while tensor_model_parallel_size <= world_size:
+    #    print_separator('test parallel embedding')
+    #    test_parallel_embedding(tensor_model_parallel_size)
+    #    tensor_model_parallel_size *= 2
 
     print_separator('test column-parallel linear')
     tensor_model_parallel_size = 1
@@ -518,12 +538,14 @@ if __name__ == '__main__':
         test_row_parallel_linear(tensor_model_parallel_size)
         tensor_model_parallel_size *= 2
 
-    print_separator('test parallel self-attention')
-    tensor_model_parallel_size = 1
-    while tensor_model_parallel_size <= world_size:
-        test_parallel_self_attention(tensor_model_parallel_size)
-        tensor_model_parallel_size *= 2
+    # Deleted
+    #print_separator('test parallel self-attention')
+    #tensor_model_parallel_size = 1
+    #while tensor_model_parallel_size <= world_size:
+    #    test_parallel_self_attention(tensor_model_parallel_size)
+    #    tensor_model_parallel_size *= 2
 
+    # PararallelTransformerLayer exists, but arguments have drifted far apart
     print_separator('test parallel transformer')
     tensor_model_parallel_size = 1
     while tensor_model_parallel_size <= world_size:
