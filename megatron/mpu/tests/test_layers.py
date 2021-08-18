@@ -546,8 +546,8 @@ if __name__ == '__main__':
     #    tensor_model_parallel_size *= 2
 
     # PararallelTransformerLayer exists, but arguments have drifted far apart
-    print_separator('test parallel transformer')
-    tensor_model_parallel_size = 1
-    while tensor_model_parallel_size <= world_size:
-        test_parallel_transformer_layer(tensor_model_parallel_size)
-        tensor_model_parallel_size *= 2
+    # print_separator('test parallel transformer')
+    # tensor_model_parallel_size = 1
+    # while tensor_model_parallel_size <= world_size:
+    #     test_parallel_transformer_layer(tensor_model_parallel_size)
+    #     tensor_model_parallel_size *= 2
