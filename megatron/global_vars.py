@@ -35,7 +35,7 @@ _GLOBAL_TIMERS = None
 
 def get_args():
     """Return arguments."""
-    # _ensure_var_is_initialized(_GLOBAL_ARGS, 'args')
+    _ensure_var_is_initialized(_GLOBAL_ARGS, 'args')
     return _GLOBAL_ARGS
 
 
@@ -94,7 +94,7 @@ def _parse_args(extra_args_provider=None, defaults={},
                 ignore_unknown_args=False):
     """Parse entire arguments."""
     global _GLOBAL_ARGS
-    # _ensure_var_is_not_initialized(_GLOBAL_ARGS, 'args')
+    _ensure_var_is_not_initialized(_GLOBAL_ARGS, 'args')
     _GLOBAL_ARGS = parse_args(extra_args_provider=extra_args_provider,
                               defaults=defaults,
                               ignore_unknown_args=ignore_unknown_args)
